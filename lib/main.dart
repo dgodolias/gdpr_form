@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;  // Import this for image conversion
 import 'package:flutter/material.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,21 +39,18 @@ class _GDPRFormState extends State<GDPRForm> {
       appBar: AppBar(
         title: Text('GDPR Consent Form'),
       ),
-      body: SingleChildScrollView( // Add SingleChildScrollView here
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // GDPR consent declaration text
               Text(
                 '9. Δηλώνω ρητά και ανεπιφύλακτα ότι έχω κατανοήσει την σημασία της...',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 16),
-              
-              // Name field
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -66,8 +64,6 @@ class _GDPRFormState extends State<GDPRForm> {
                 },
               ),
               SizedBox(height: 16),
-              
-              // Date field
               TextFormField(
                 controller: _dateController,
                 decoration: InputDecoration(
@@ -81,30 +77,23 @@ class _GDPRFormState extends State<GDPRForm> {
                 },
               ),
               SizedBox(height: 16),
-              
-              // Signature pad
               Text('Υπογραφή Ασθενούς', style: TextStyle(fontSize: 16)),
               SizedBox(height: 8),
               Container(
-                color: Colors.grey[200],  // Set the background color here
-                height: 200,  // Set the height here
+                color: Colors.grey[200],
+                height: 200,
                 child: Signature(
                   key: _signatureKey,
                   onSign: () async {
-                    final Uint8List? signature = (await _signatureKey.currentState?.getData()) as Uint8List?;
-                    setState(() {
-                      _signatureData = signature;
-                    });
+                    // Signature captured
                   },
                 ),
               ),
               SizedBox(height: 16),
-              
-              // Submit button
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    _showPreviewDialog(context);
+                    _captureAndConvertSignature();
                   }
                 },
                 child: Text('Καταχώρηση'),
@@ -114,6 +103,27 @@ class _GDPRFormState extends State<GDPRForm> {
         ),
       ),
     );
+  }
+
+  // Capture the signature as Image and convert it to Uint8List
+  Future<void> _captureAndConvertSignature() async {
+    // Step 1: Capture the signature as an Image
+    final signatureImage = await _signatureKey.currentState?.getData();
+    if (signatureImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please provide a signature')),
+      );
+      return;
+    }
+
+    // Step 2: Convert the Image to Uint8List
+    final ui.Image image = signatureImage;
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List imageBytes = byteData!.buffer.asUint8List();
+
+    // Save the signature image as a PDF
+    _signatureData = imageBytes;
+    await _showPreviewDialog(context);
   }
 
   // Show a dialog with the preview message and save the PDF
