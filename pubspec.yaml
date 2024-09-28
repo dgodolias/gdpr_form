@@ -26,4 +26,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/fonts/glyphicons-halflings-regular.ttf
+    - assets/fonts/
