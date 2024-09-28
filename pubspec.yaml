@@ -1,23 +1,27 @@
 name: gdpr_form
-description: "A new Flutter project."
-publish_to: 'none'
+description: A Flutter application to save GDPR consent forms.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.6 <4.0.0'
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_signature_pad: ^3.0.1
-  pdf: ^3.7.0
-  path_provider: ^2.0.9
-  cupertino_icons: ^1.0.2
+  flutter_signature_pad: ^3.0.0
+  path_provider: ^2.0.14
+  permission_handler: ^10.2.0
+  device_info_plus: ^9.0.2
+  pdf: ^3.10.1
+  intl: ^0.17.0 
+  signature: ^5.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
